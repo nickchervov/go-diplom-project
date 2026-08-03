@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"log"
 	"net/http"
 
 	"github.com/nickchervov/go-diplom-project/internal/domain"
@@ -13,14 +14,12 @@ func (h *Handler) DoneTask(w http.ResponseWriter, r *http.Request) {
 	input := dto.DoneTaskInput{Id: r.FormValue("id")}
 
 	if err := h.svc.DoneTask(r.Context(), input); err != nil {
-		if errors.Is(err, domain.ErrTaskNotFound) {
-			render.Json(w, http.StatusNotFound, map[string]string{"error": err.Error()})
+		var targetErr *domain.DomainError
+		if errors.As(err, &targetErr) {
+			render.Json(w, targetErr.Code, map[string]string{"error": targetErr.Error()})
 			return
 		}
-		if errors.Is(err, domain.ErrIncorrectId) || errors.Is(err, domain.ErrIncorrectDate) || errors.Is(err, domain.ErrIncorrectRepeatRule) {
-			render.Json(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
-			return
-		}
+		log.Printf("internal error done task: %v\n", err)
 		render.Json(w, http.StatusInternalServerError, map[string]string{"error": "internal error"})
 		return
 	}

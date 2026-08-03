@@ -1,6 +1,7 @@
 package nextdate
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -64,21 +65,21 @@ func NextDate(now time.Time, dstart, repeat string) (string, error) {
 	switch repeatRules[0] {
 	case "d":
 		if len(repeatRules) != 2 {
-			return "", domain.ErrIncorrectRepeatRule
+			return "", fmt.Errorf("%w", domain.ErrIncorrectRepeatRule)
 		}
 
 		days, err := strconv.Atoi(repeatRules[1])
 		if err != nil {
-			return "", domain.ErrIncorrectRepeatRule
+			return "", fmt.Errorf("%w", domain.ErrIncorrectRepeatRule)
 		}
 
 		if days > 400 {
-			return "", domain.ErrIncorrectRepeatRule
+			return "", fmt.Errorf("%w", domain.ErrIncorrectRepeatRule)
 		}
 
 		date, err := time.Parse("20060102", dstart)
 		if err != nil {
-			return "", domain.ErrIncorrectDate
+			return "", fmt.Errorf("%w", domain.ErrIncorrectDate)
 		}
 
 		for {
@@ -91,12 +92,12 @@ func NextDate(now time.Time, dstart, repeat string) (string, error) {
 		return date.Format("20060102"), nil
 	case "y":
 		if len(repeatRules) > 1 {
-			return "", domain.ErrIncorrectRepeatRule
+			return "", fmt.Errorf("%w", domain.ErrIncorrectRepeatRule)
 		}
 
 		date, err := time.Parse("20060102", dstart)
 		if err != nil {
-			return "", domain.ErrIncorrectDate
+			return "", fmt.Errorf("%w", domain.ErrIncorrectDate)
 		}
 
 		for {
@@ -108,22 +109,22 @@ func NextDate(now time.Time, dstart, repeat string) (string, error) {
 		return date.Format("20060102"), nil
 	case "w":
 		if len(repeatRules) != 2 {
-			return "", domain.ErrIncorrectRepeatRule
+			return "", fmt.Errorf("%w", domain.ErrIncorrectRepeatRule)
 		}
 
 		date, err := time.Parse("20060102", dstart)
 		if err != nil {
-			return "", domain.ErrIncorrectDate
+			return "", fmt.Errorf("%w", domain.ErrIncorrectDate)
 		}
 
 		days := strings.Split(repeatRules[1], ",")
 		for _, d := range days {
 			numDay, err := strconv.Atoi(d)
 			if err != nil {
-				return "", domain.ErrIncorrectRepeatRule
+				return "", fmt.Errorf("%w", domain.ErrIncorrectRepeatRule)
 			}
 			if numDay > 7 || numDay < 1 {
-				return "", domain.ErrIncorrectRepeatRule
+				return "", fmt.Errorf("%w", domain.ErrIncorrectRepeatRule)
 			}
 			acceptedDaysOfWeek[numDay] = true
 		}
@@ -140,7 +141,7 @@ func NextDate(now time.Time, dstart, repeat string) (string, error) {
 		return date.Format("20060102"), nil
 	case "m":
 		if len(repeatRules) > 3 {
-			return "", domain.ErrIncorrectRepeatRule
+			return "", fmt.Errorf("%w", domain.ErrIncorrectRepeatRule)
 		}
 
 		if len(repeatRules) == 3 {
@@ -151,10 +152,10 @@ func NextDate(now time.Time, dstart, repeat string) (string, error) {
 			for _, md := range monthDay {
 				numMd, err := strconv.Atoi(md)
 				if err != nil {
-					return "", domain.ErrIncorrectRepeatRule
+					return "", fmt.Errorf("%w", domain.ErrIncorrectRepeatRule)
 				}
 				if numMd < -2 || numMd > 31 || numMd == 0 {
-					return "", domain.ErrIncorrectRepeatRule
+					return "", fmt.Errorf("%w", domain.ErrIncorrectRepeatRule)
 				}
 				if numMd == -1 {
 					isLastDay = true
@@ -169,11 +170,11 @@ func NextDate(now time.Time, dstart, repeat string) (string, error) {
 			for _, m := range month {
 				numM, err := strconv.Atoi(m)
 				if err != nil {
-					return "", domain.ErrIncorrectRepeatRule
+					return "", fmt.Errorf("%w", domain.ErrIncorrectRepeatRule)
 				}
 
 				if numM > 12 || numM < 1 {
-					return "", domain.ErrIncorrectRepeatRule
+					return "", fmt.Errorf("%w", domain.ErrIncorrectRepeatRule)
 				}
 
 				acceptedMonth[numM] = true
@@ -181,7 +182,7 @@ func NextDate(now time.Time, dstart, repeat string) (string, error) {
 
 			date, err := time.Parse("20060102", dstart)
 			if err != nil {
-				return "", domain.ErrIncorrectDate
+				return "", fmt.Errorf("%w", domain.ErrIncorrectDate)
 			}
 
 			if isPreLastDay {
@@ -241,10 +242,10 @@ func NextDate(now time.Time, dstart, repeat string) (string, error) {
 			for _, md := range monthDay {
 				numMd, err := strconv.Atoi(md)
 				if err != nil {
-					return "", domain.ErrIncorrectRepeatRule
+					return "", fmt.Errorf("%w", domain.ErrIncorrectRepeatRule)
 				}
 				if numMd < -2 || numMd > 31 || numMd == 0 {
-					return "", domain.ErrIncorrectRepeatRule
+					return "", fmt.Errorf("%w", domain.ErrIncorrectRepeatRule)
 				}
 				if numMd == -1 {
 					isLastDay = true
@@ -259,7 +260,7 @@ func NextDate(now time.Time, dstart, repeat string) (string, error) {
 
 			date, err := time.Parse("20060102", dstart)
 			if err != nil {
-				return "", domain.ErrIncorrectDate
+				return "", fmt.Errorf("%w", domain.ErrIncorrectDate)
 			}
 
 			if isPreLastDay {
@@ -308,6 +309,6 @@ func NextDate(now time.Time, dstart, repeat string) (string, error) {
 		}
 
 	default:
-		return "", domain.ErrIncorrectRepeatRule
+		return "", fmt.Errorf("%w", domain.ErrIncorrectRepeatRule)
 	}
 }

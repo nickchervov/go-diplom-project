@@ -27,12 +27,13 @@ func main() {
 }
 
 func AppRun(ctx context.Context) error {
-	sqlite, err := sqlite.New(ctx)
+	repo, err := sqlite.New(ctx)
 	if err != nil {
 		return fmt.Errorf("open connection to db: %w", err)
 	}
+	defer repo.Close()
 
-	svc := service.New(sqlite)
+	svc := service.New(repo)
 
 	router := handler.SetRoutes(svc)
 
@@ -53,7 +54,6 @@ func AppRun(ctx context.Context) error {
 	log.Println("Starting Graceful shutdown")
 
 	server.Close()
-	sqlite.Close()
 
 	log.Println("Server closed")
 	return nil

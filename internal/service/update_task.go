@@ -12,14 +12,14 @@ import (
 
 func (s *SchedulerService) UpdateTask(ctx context.Context, input dto.UpdateTaskInput) error {
 	if input.Title == "" {
-		return domain.ErrEmptyTitle
+		return fmt.Errorf("%w", domain.ErrEmptyTitle)
 	}
 	if input.Date == "" {
 		input.Date = time.Now().Format("20060102")
 	}
 	_, err := time.Parse("20060102", input.Date)
 	if err != nil {
-		return domain.ErrIncorrectDate
+		return fmt.Errorf("%w", domain.ErrIncorrectDate)
 	}
 
 	now := time.Now().Format("20060102")

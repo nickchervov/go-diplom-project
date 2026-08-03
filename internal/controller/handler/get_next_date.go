@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"time"
 
@@ -21,15 +22,18 @@ func (h *Handler) GetNextDate(w http.ResponseWriter, r *http.Request) {
 
 	dateNow, err := time.Parse("20060102", now)
 	if err != nil {
+		log.Printf("internal error get next date: %v\n", err)
 		render.Json(w, http.StatusInternalServerError, map[string]string{"error": "parsing now date"})
 		return
 	}
 	nextDate, err := nextdate.NextDate(dateNow, date, repeat)
 	if err != nil {
-		if errors.Is(err, domain.ErrEmptyTitle) || errors.Is(err, domain.ErrIncorrectDate) || errors.Is(err, domain.ErrIncorrectRepeatRule) {
-			render.Json(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+		var targetErr *domain.DomainError
+		if errors.As(err, &targetErr) {
+			render.Json(w, targetErr.Code, map[string]string{"error": targetErr.Error()})
 			return
 		}
+		log.Printf("internal error get next date: %v\n", err)
 		render.Json(w, http.StatusInternalServerError, map[string]string{"error": "internal error"})
 		return
 	}

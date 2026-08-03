@@ -12,7 +12,7 @@ import (
 
 func (s *SchedulerService) AddTask(ctx context.Context, input dto.CreateTaskInput) (dto.CreateTaskOutput, error) {
 	if input.Title == "" {
-		return dto.CreateTaskOutput{}, domain.ErrEmptyTitle
+		return dto.CreateTaskOutput{}, fmt.Errorf("%w", domain.ErrEmptyTitle)
 	}
 	if input.Date == "" {
 		input.Date = time.Now().Format("20060102")
@@ -20,7 +20,7 @@ func (s *SchedulerService) AddTask(ctx context.Context, input dto.CreateTaskInpu
 
 	_, err := time.Parse("20060102", input.Date)
 	if err != nil {
-		return dto.CreateTaskOutput{}, domain.ErrIncorrectDate
+		return dto.CreateTaskOutput{}, fmt.Errorf("%w", domain.ErrIncorrectDate)
 	}
 
 	now := time.Now().Format("20060102")

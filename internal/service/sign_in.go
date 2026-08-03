@@ -28,5 +28,5 @@ func (s *SchedulerService) SignIn(ctx context.Context, input dto.SignInInput) (d
 		return output, nil
 	}
 
-	return dto.SignInOutput{}, domain.ErrIncorrectPassword
+	return dto.SignInOutput{}, fmt.Errorf("%w", domain.ErrIncorrectPassword)
 }

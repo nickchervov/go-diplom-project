@@ -22,7 +22,7 @@ func (s *SchedulerService) DeleteTask(ctx context.Context, input dto.DeleteTaskI
 	}
 
 	if err := s.repo.DeleteTask(ctx, input.Id); err != nil {
-		return fmt.Errorf("Deleting task: %w", err)
+		return fmt.Errorf("deleting task: %w", err)
 	}
 
 	return nil

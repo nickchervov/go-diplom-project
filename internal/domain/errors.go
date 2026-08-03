@@ -1,12 +1,19 @@
 package domain
 
-import "errors"
+type DomainError struct {
+	Code    int
+	Message string
+}
+
+func (e DomainError) Error() string {
+	return e.Message
+}
 
 var (
-	ErrEmptyTitle          = errors.New("title must be not empty")
-	ErrIncorrectDate       = errors.New("incorrect date")
-	ErrIncorrectRepeatRule = errors.New("incorrect repeat rule")
-	ErrIncorrectId         = errors.New("incorrect id")
-	ErrTaskNotFound        = errors.New("task not found")
-	ErrIncorrectPassword   = errors.New("incorrect password")
+	ErrEmptyTitle          = &DomainError{Code: 400, Message: "title must be not empty"}
+	ErrIncorrectDate       = &DomainError{Code: 400, Message: "incorrect date"}
+	ErrIncorrectRepeatRule = &DomainError{Code: 400, Message: "incorrect repeat rule"}
+	ErrIncorrectId         = &DomainError{Code: 400, Message: "incorrect id"}
+	ErrTaskNotFound        = &DomainError{Code: 404, Message: "task not found"}
+	ErrIncorrectPassword   = &DomainError{Code: 400, Message: "incorrect password"}
 )

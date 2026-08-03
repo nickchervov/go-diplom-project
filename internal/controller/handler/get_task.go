@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"log"
 	"net/http"
 
 	"github.com/nickchervov/go-diplom-project/internal/domain"
@@ -16,14 +17,12 @@ func (h *Handler) GetTask(w http.ResponseWriter, r *http.Request) {
 
 	task, err := h.svc.GetTask(r.Context(), input)
 	if err != nil {
-		if errors.Is(err, domain.ErrIncorrectId) {
-			render.Json(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+		var targetErr *domain.DomainError
+		if errors.As(err, &targetErr) {
+			render.Json(w, targetErr.Code, map[string]string{"error": targetErr.Error()})
 			return
 		}
-		if errors.Is(err, domain.ErrTaskNotFound) {
-			render.Json(w, http.StatusNotFound, map[string]string{"error": domain.ErrTaskNotFound.Error()})
-			return
-		}
+		log.Printf("internal error get task: %v\n", err)
 		render.Json(w, http.StatusInternalServerError, map[string]string{"error": "internal error"})
 		return
 	}
